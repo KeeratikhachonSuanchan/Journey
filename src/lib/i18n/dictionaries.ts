@@ -104,6 +104,8 @@ export interface Dictionary {
       reflections: number;
     }) => string;
     willDeleteChildren: string;
+    deleteHabitTitle: string;
+    deleteHabitWarning: (info: { title: string; reflections: number }) => string;
     reflectionHistory: (count: number) => string;
     noReflectionsYet: string;
     starting: string;
@@ -289,6 +291,11 @@ export const en: Dictionary = {
         reflections ? `, and ${reflections} reflection${reflections === 1 ? "" : "s"}` : ""
       }. This cannot be undone.`,
     willDeleteChildren: "Goals that will also be deleted:",
+    deleteHabitTitle: "Delete this to-do?",
+    deleteHabitWarning: ({ title, reflections }) =>
+      `This will permanently delete "${title}"${
+        reflections ? ` and ${reflections} reflection${reflections === 1 ? "" : "s"}` : ""
+      }. This cannot be undone.`,
     reflectionHistory: (count: number) => `Reflection History (${count})`,
     noReflectionsYet:
       "No reflections yet. Review this goal on the Today page.",
@@ -478,6 +485,11 @@ export const th: Dictionary = {
         reflections ? ` และการรีวิว ${reflections} รายการ` : ""
       } อย่างถาวร ไม่สามารถกู้คืนได้`,
     willDeleteChildren: "เป้าหมายย่อยที่จะถูกลบไปด้วย:",
+    deleteHabitTitle: "ลบสิ่งที่ต้องทำนี้?",
+    deleteHabitWarning: ({ title, reflections }) =>
+      `การลบนี้จะลบ "${title}"${
+        reflections ? ` และการรีวิว ${reflections} รายการ` : ""
+      } อย่างถาวร ไม่สามารถกู้คืนได้`,
     reflectionHistory: (count: number) => `ประวัติการรีวิว (${count})`,
     noReflectionsYet: "ยังไม่มีการรีวิว ไปรีวิวเป้าหมายนี้ที่หน้าวันนี้",
     starting: "เริ่ม",

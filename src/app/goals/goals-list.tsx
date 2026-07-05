@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toggleHabit } from "./actions";
 import { DeleteGoalButton } from "./delete-goal-button";
+import { DeleteHabitButton } from "./delete-habit-button";
 import type { Goal, Habit } from "@/db/schema";
 import Link from "next/link";
 import { useT } from "@/lib/i18n/context";
@@ -86,7 +87,7 @@ export function GoalsList({
               {habits.map((habit) => (
                 <div
                   key={habit.id}
-                  className="flex items-center justify-between py-2 border-b last:border-0"
+                  className="flex items-center justify-between gap-2 py-2 border-b last:border-0"
                 >
                   <div className="flex items-baseline gap-2 flex-wrap min-w-0">
                     <span className="font-medium text-sm">{habit.title}</span>
@@ -97,17 +98,20 @@ export function GoalsList({
                         ` · ${t.goals.forGoal(goalTitleMap[habit.goalId])}`}
                     </span>
                   </div>
-                  <form
-                    action={toggleHabit.bind(null, habit.id, !habit.active)}
-                  >
-                    <Button
-                      type="submit"
-                      variant={habit.active ? "default" : "secondary"}
-                      size="sm"
+                  <div className="flex items-center gap-2 shrink-0">
+                    <form
+                      action={toggleHabit.bind(null, habit.id, !habit.active)}
                     >
-                      {habit.active ? t.goals.active : t.goals.paused}
-                    </Button>
-                  </form>
+                      <Button
+                        type="submit"
+                        variant={habit.active ? "default" : "secondary"}
+                        size="sm"
+                      >
+                        {habit.active ? t.goals.active : t.goals.paused}
+                      </Button>
+                    </form>
+                    <DeleteHabitButton habitId={habit.id} habitTitle={habit.title} />
+                  </div>
                 </div>
               ))}
             </div>

@@ -57,6 +57,29 @@ export async function toggleHabit(habitId: string, active: boolean) {
   revalidatePath("/today");
 }
 
+export async function getHabitDeletePreview(habitId: string) {
+  const reflectionCount = (
+    await db
+      .select({ id: reflections.id })
+      .from(reflections)
+      .where(eq(reflections.habitId, habitId))
+  ).length;
+
+  return { reflectionCount };
+}
+
+export async function deleteHabit(habitId: string) {
+  const userId = getCurrentUserId();
+
+  await db.delete(reflections).where(eq(reflections.habitId, habitId));
+  await db
+    .delete(habits)
+    .where(and(eq(habits.id, habitId), eq(habits.userId, userId)));
+
+  revalidatePath("/goals");
+  revalidatePath("/today");
+}
+
 export async function createReflection(formData: FormData) {
   const userId = getCurrentUserId();
   const goalId = (formData.get("goalId") as string) || null;
