@@ -42,24 +42,6 @@ export function yearStart(d: Date): Date {
   return startOfYear(d);
 }
 
-export function periodStartFor(
-  periodType: "day" | "week" | "month" | "year" | "aspiration",
-  d: Date
-): Date | null {
-  switch (periodType) {
-    case "day":
-      return d;
-    case "week":
-      return weekStart(d);
-    case "month":
-      return monthStart(d);
-    case "year":
-      return yearStart(d);
-    case "aspiration":
-      return null;
-  }
-}
-
 export function formatDate(d: Date): string {
   return format(d, "yyyy-MM-dd");
 }

@@ -15,6 +15,13 @@
       "when": 1782832974063,
       "tag": "0001_peaceful_guardian",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1783634400000,
+      "tag": "0002_goal_period_range_and_cadence",
+      "breakpoints": true
     }
   ]
 }

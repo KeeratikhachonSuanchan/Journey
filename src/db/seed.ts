@@ -3,6 +3,7 @@ import { config } from "dotenv";
 config({ path: ".env.local", override: true });
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
+import { addDays } from "date-fns";
 import { users, categories, budgets, goals, habits } from "./schema";
 import { SEED_USER_ID } from "../lib/currentUser";
 import { formatDate, monthStart, today } from "../lib/dates";
@@ -56,22 +57,22 @@ async function seed() {
         userId: SEED_USER_ID,
         title: "Read for 30 minutes",
         domain: "dev",
-        periodType: "day",
         periodStart: formatDate(today()),
+        periodEnd: formatDate(today()),
       },
       {
         userId: SEED_USER_ID,
         title: "Complete TypeScript course module",
         domain: "dev",
-        periodType: "week",
         periodStart: formatDate(today()),
+        periodEnd: formatDate(addDays(today(), 7)),
       },
       {
         userId: SEED_USER_ID,
         title: "Stay within budget this month",
         domain: "finance",
-        periodType: "month",
         periodStart: currentMonth,
+        periodEnd: formatDate(addDays(monthStart(addDays(today(), 31)), -1)),
       },
     ])
     .onConflictDoNothing();

@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { DeleteGoalButton } from "../delete-goal-button";
+import { formatPeriodRange } from "../format-period";
 import { notFound } from "next/navigation";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
@@ -55,8 +56,7 @@ export default async function GoalDetailPage({
       </div>
 
       <p className="text-xs text-muted-foreground">
-        {dict.enums.domain[goal.domain]} · {dict.enums.periodType[goal.periodType]}
-        {goal.periodStart && ` · ${dict.goals.starting} ${goal.periodStart}`}
+        {dict.enums.domain[goal.domain]} · {formatPeriodRange(goal.periodStart, goal.periodEnd)}
       </p>
 
       <Card>
@@ -154,7 +154,7 @@ export default async function GoalDetailPage({
                   <div className="flex items-baseline gap-2">
                     <span className="text-sm font-medium">{child.title}</span>
                     <span className="text-xs text-muted-foreground">
-                      {dict.enums.periodType[child.periodType]}
+                      {formatPeriodRange(child.periodStart, child.periodEnd)}
                     </span>
                   </div>
                   <Badge variant={statusVariant[child.status]} className="shrink-0">

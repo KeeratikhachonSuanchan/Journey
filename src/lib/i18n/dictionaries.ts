@@ -79,13 +79,15 @@ export interface Dictionary {
     goalTitle: string;
     goalTitlePlaceholder: string;
     domain: string;
-    period: string;
     periodStart: string;
+    periodEnd: string;
     createGoal: string;
+    editGoal: string;
     newHabit: string;
     habitTitlePlaceholder: string;
     cadence: string;
     createHabit: string;
+    editHabit: string;
     goalsCount: (count: number) => string;
     habitsCount: (count: number) => string;
     noGoalsYet: string;
@@ -108,7 +110,6 @@ export interface Dictionary {
     deleteHabitWarning: (info: { title: string; reflections: number }) => string;
     reflectionHistory: (count: number) => string;
     noReflectionsYet: string;
-    starting: string;
     linkToGoal: string;
     none: string;
     forGoal: (title: string) => string;
@@ -153,13 +154,6 @@ export interface Dictionary {
       partial: string;
       missed: string;
     };
-    periodType: {
-      day: string;
-      week: string;
-      month: string;
-      year: string;
-      aspiration: string;
-    };
     bucket: {
       needs: string;
       wants: string;
@@ -168,6 +162,8 @@ export interface Dictionary {
     cadence: {
       daily: string;
       weekly: string;
+      monthly: string;
+      quarterly: string;
     };
     domain: {
       finance: string;
@@ -266,13 +262,15 @@ export const en: Dictionary = {
     goalTitle: "Title",
     goalTitlePlaceholder: "What do you want to achieve?",
     domain: "Domain",
-    period: "Period",
     periodStart: "Period Start",
+    periodEnd: "Period End",
     createGoal: "Create Goal",
+    editGoal: "Edit Goal",
     newHabit: "New To-do",
     habitTitlePlaceholder: "What do you need to do?",
     cadence: "Cadence",
     createHabit: "Create To-do",
+    editHabit: "Edit To-do",
     goalsCount: (count: number) => `Goals (${count})`,
     habitsCount: (count: number) => `To-dos (${count})`,
     noGoalsYet: "No goals yet.",
@@ -299,7 +297,6 @@ export const en: Dictionary = {
     reflectionHistory: (count: number) => `Reflection History (${count})`,
     noReflectionsYet:
       "No reflections yet. Review this goal on the Today page.",
-    starting: "Starting",
     linkToGoal: "Link to goal",
     none: "None",
     forGoal: (title: string) => `For: ${title}`,
@@ -347,13 +344,6 @@ export const en: Dictionary = {
       partial: "Partial",
       missed: "Missed",
     },
-    periodType: {
-      day: "Day",
-      week: "Week",
-      month: "Month",
-      year: "Year",
-      aspiration: "Aspiration",
-    },
     bucket: {
       needs: "Needs",
       wants: "Wants",
@@ -362,6 +352,8 @@ export const en: Dictionary = {
     cadence: {
       daily: "Daily",
       weekly: "Weekly",
+      monthly: "Monthly",
+      quarterly: "Quarterly",
     },
     domain: {
       finance: "Finance",
@@ -460,13 +452,15 @@ export const th: Dictionary = {
     goalTitle: "ชื่อเป้าหมาย",
     goalTitlePlaceholder: "คุณอยากบรรลุอะไร?",
     domain: "ด้าน",
-    period: "ช่วงเวลา",
     periodStart: "เริ่มต้นช่วงเวลา",
+    periodEnd: "สิ้นสุดช่วงเวลา",
     createGoal: "สร้างเป้าหมาย",
+    editGoal: "แก้ไขเป้าหมาย",
     newHabit: "สิ่งที่ต้องทำใหม่",
     habitTitlePlaceholder: "อยากสร้างสิ่งที่ต้องทำอะไร?",
     cadence: "ความถี่",
     createHabit: "สร้างสิ่งที่ต้องทำ",
+    editHabit: "แก้ไขสิ่งที่ต้องทำ",
     goalsCount: (count: number) => `เป้าหมาย (${count})`,
     habitsCount: (count: number) => `สิ่งที่ต้องทำ (${count})`,
     noGoalsYet: "ยังไม่มีเป้าหมาย",
@@ -492,7 +486,6 @@ export const th: Dictionary = {
       } อย่างถาวร ไม่สามารถกู้คืนได้`,
     reflectionHistory: (count: number) => `ประวัติการรีวิว (${count})`,
     noReflectionsYet: "ยังไม่มีการรีวิว ไปรีวิวเป้าหมายนี้ที่หน้าวันนี้",
-    starting: "เริ่ม",
     linkToGoal: "ผูกกับเป้าหมาย",
     none: "ไม่ผูก",
     forGoal: (title: string) => `เพื่อ: ${title}`,
@@ -539,13 +532,6 @@ export const th: Dictionary = {
       partial: "สำเร็จบางส่วน",
       missed: "พลาด",
     },
-    periodType: {
-      day: "วัน",
-      week: "สัปดาห์",
-      month: "เดือน",
-      year: "ปี",
-      aspiration: "ความใฝ่ฝัน",
-    },
     bucket: {
       needs: "จำเป็น",
       wants: "อยากได้",
@@ -554,6 +540,8 @@ export const th: Dictionary = {
     cadence: {
       daily: "ทุกวัน",
       weekly: "ทุกสัปดาห์",
+      monthly: "ทุกเดือน",
+      quarterly: "ทุกไตรมาส",
     },
     domain: {
       finance: "การเงิน",

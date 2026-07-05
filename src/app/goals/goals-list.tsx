@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { toggleHabit } from "./actions";
 import { DeleteGoalButton } from "./delete-goal-button";
 import { DeleteHabitButton } from "./delete-habit-button";
+import { EditGoalDialog } from "./edit-goal-dialog";
+import { EditHabitDialog } from "./edit-habit-dialog";
+import { formatPeriodRange } from "./format-period";
 import type { Goal, Habit } from "@/db/schema";
 import Link from "next/link";
 import { useT } from "@/lib/i18n/context";
@@ -21,10 +24,12 @@ export function GoalsList({
   goals,
   habits,
   goalTitleMap,
+  linkableGoals,
 }: {
   goals: Goal[];
   habits: Habit[];
   goalTitleMap: Record<string, string>;
+  linkableGoals: Goal[];
 }) {
   const t = useT();
 
@@ -52,7 +57,7 @@ export function GoalsList({
                   >
                     <span className="font-medium text-sm">{goal.title}</span>
                     <span className="text-xs text-muted-foreground">
-                      {t.enums.periodType[goal.periodType]} · {t.enums.domain[goal.domain]}
+                      {formatPeriodRange(goal.periodStart, goal.periodEnd)} · {t.enums.domain[goal.domain]}
                       {goal.parentId &&
                         goalTitleMap[goal.parentId] &&
                         ` · ${t.goals.forGoal(goalTitleMap[goal.parentId])}`}
@@ -61,6 +66,7 @@ export function GoalsList({
                   <Badge variant={statusVariant[goal.status]} className="shrink-0">
                     {t.enums.status[goal.status]}
                   </Badge>
+                  <EditGoalDialog goal={goal} linkableGoals={linkableGoals} />
                   <DeleteGoalButton
                     goalId={goal.id}
                     goalTitle={goal.title}
@@ -110,6 +116,7 @@ export function GoalsList({
                         {habit.active ? t.goals.active : t.goals.paused}
                       </Button>
                     </form>
+                    <EditHabitDialog habit={habit} linkableGoals={linkableGoals} />
                     <DeleteHabitButton habitId={habit.id} habitTitle={habit.title} />
                   </div>
                 </div>

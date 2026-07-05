@@ -3,49 +3,76 @@
 import { db } from "@/db";
 import { goals, habits, reflections } from "@/db/schema";
 import { getCurrentUserId } from "@/lib/currentUser";
-import { eq, and, gte, lt, desc, inArray, ne } from "drizzle-orm";
+import { eq, and, or, gte, lte, lt, isNull, desc, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { formatDate, weekStart, today as todayFn } from "@/lib/dates";
 import { addDays, addWeeks } from "date-fns";
 
-export async function createGoal(formData: FormData) {
-  const userId = getCurrentUserId();
+function parseGoalFields(formData: FormData) {
   const title = formData.get("title") as string;
   const domain = formData.get("domain") as "finance" | "dev";
-  const periodType = formData.get("periodType") as
-    | "day"
-    | "week"
-    | "month"
-    | "year"
-    | "aspiration";
-  const periodStart =
-    periodType === "aspiration"
-      ? null
-      : (formData.get("periodStart") as string);
+  const periodStart = formData.get("periodStart") as string;
+  const rawPeriodEnd = formData.get("periodEnd") as string;
+  const periodEnd = rawPeriodEnd || null;
   const rawParentId = formData.get("parentId") as string;
   const parentId = rawParentId && rawParentId !== "none" ? rawParentId : null;
 
-  await db.insert(goals).values({
-    userId,
-    title,
-    domain,
-    periodType,
-    periodStart,
-    parentId,
-  });
+  return { title, domain, periodStart, periodEnd, parentId };
+}
+
+export async function createGoal(formData: FormData) {
+  const userId = getCurrentUserId();
+  const fields = parseGoalFields(formData);
+
+  await db.insert(goals).values({ userId, ...fields });
 
   revalidatePath("/goals");
   revalidatePath("/today");
 }
 
-export async function createHabit(formData: FormData) {
+export async function updateGoal(goalId: string, formData: FormData) {
   const userId = getCurrentUserId();
+  const fields = parseGoalFields(formData);
+
+  await db
+    .update(goals)
+    .set(fields)
+    .where(and(eq(goals.id, goalId), eq(goals.userId, userId)));
+
+  revalidatePath("/goals");
+  revalidatePath("/today");
+  revalidatePath("/goals/review");
+}
+
+type Cadence = "daily" | "weekly" | "monthly" | "quarterly";
+
+function parseHabitFields(formData: FormData) {
   const title = formData.get("title") as string;
-  const cadence = formData.get("cadence") as "daily" | "weekly";
+  const cadence = formData.get("cadence") as Cadence;
   const rawGoalId = formData.get("goalId") as string;
   const goalId = rawGoalId && rawGoalId !== "none" ? rawGoalId : null;
 
-  await db.insert(habits).values({ userId, title, cadence, goalId });
+  return { title, cadence, goalId };
+}
+
+export async function createHabit(formData: FormData) {
+  const userId = getCurrentUserId();
+  const fields = parseHabitFields(formData);
+
+  await db.insert(habits).values({ userId, ...fields });
+
+  revalidatePath("/goals");
+  revalidatePath("/today");
+}
+
+export async function updateHabit(habitId: string, formData: FormData) {
+  const userId = getCurrentUserId();
+  const fields = parseHabitFields(formData);
+
+  await db
+    .update(habits)
+    .set(fields)
+    .where(and(eq(habits.id, habitId), eq(habits.userId, userId)));
 
   revalidatePath("/goals");
   revalidatePath("/today");
@@ -117,16 +144,20 @@ export async function createReflection(formData: FormData) {
   revalidatePath("/goals/review");
 }
 
-// Goals that can act as a parent link target — day-goals are excluded since
-// they should be the "child" in a linkage, not the "parent".
-export async function getLinkableGoals() {
+// Goals that can act as a parent link target. Optionally excludes one goal
+// (itself, when editing) to avoid a self-referencing parent loop.
+export async function getLinkableGoals(excludeGoalId?: string) {
   const userId = getCurrentUserId();
 
-  return db
+  const allGoals = await db
     .select()
     .from(goals)
-    .where(and(eq(goals.userId, userId), ne(goals.periodType, "day")))
+    .where(eq(goals.userId, userId))
     .orderBy(desc(goals.createdAt));
+
+  return excludeGoalId
+    ? allGoals.filter((g) => g.id !== excludeGoalId)
+    : allGoals;
 }
 
 export async function getTodayData() {
@@ -134,14 +165,16 @@ export async function getTodayData() {
   const todayDate = todayFn();
   const todayStr = formatDate(todayDate);
 
+  // "Today's goals" are those whose period range covers today (an open
+  // start/end means unbounded on that side).
   const dayGoals = await db
     .select()
     .from(goals)
     .where(
       and(
         eq(goals.userId, userId),
-        eq(goals.periodType, "day"),
-        eq(goals.periodStart, todayStr)
+        or(isNull(goals.periodStart), lte(goals.periodStart, todayStr)),
+        or(isNull(goals.periodEnd), gte(goals.periodEnd, todayStr))
       )
     );
 
@@ -336,14 +369,15 @@ export async function getWeeklyReview() {
   const weekStartStr = formatDate(weekStartDate);
   const weekEndStr = formatDate(weekEndDate);
 
+  // Goals whose period range overlaps this week at all.
   const weekGoals = await db
     .select()
     .from(goals)
     .where(
       and(
         eq(goals.userId, userId),
-        gte(goals.periodStart, weekStartStr),
-        lt(goals.periodStart, weekEndStr)
+        or(isNull(goals.periodStart), lt(goals.periodStart, weekEndStr)),
+        or(isNull(goals.periodEnd), gte(goals.periodEnd, weekStartStr))
       )
     );
 

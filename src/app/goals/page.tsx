@@ -35,6 +35,7 @@ export default async function GoalsPage() {
         goals={data.goals}
         habits={data.habits}
         goalTitleMap={data.goalTitleMap}
+        linkableGoals={linkableGoals}
       />
     </div>
   );

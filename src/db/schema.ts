@@ -17,20 +17,18 @@ import { sql } from "drizzle-orm";
 // --- Enums ---
 
 export const domainEnum = pgEnum("domain", ["finance", "dev"]);
-export const periodTypeEnum = pgEnum("period_type", [
-  "day",
-  "week",
-  "month",
-  "year",
-  "aspiration",
-]);
 export const goalStatusEnum = pgEnum("goal_status", [
   "open",
   "achieved",
   "partial",
   "missed",
 ]);
-export const cadenceEnum = pgEnum("cadence", ["daily", "weekly"]);
+export const cadenceEnum = pgEnum("cadence", [
+  "daily",
+  "weekly",
+  "monthly",
+  "quarterly",
+]);
 export const outcomeEnum = pgEnum("outcome", ["achieved", "partial", "missed"]);
 export const reasonTagEnum = pgEnum("reason_tag", [
   "time",
@@ -59,16 +57,16 @@ export const goals = pgTable(
     parentId: uuid("parent_id").references((): AnyPgColumn => goals.id),
     title: text("title").notNull(),
     domain: domainEnum("domain").notNull(),
-    periodType: periodTypeEnum("period_type").notNull(),
     periodStart: date("period_start"),
+    periodEnd: date("period_end"),
     status: goalStatusEnum("status").default("open").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [
     index("goals_user_period_idx").on(
       table.userId,
-      table.periodType,
-      table.periodStart
+      table.periodStart,
+      table.periodEnd
     ),
     index("goals_parent_idx").on(table.parentId),
   ]
