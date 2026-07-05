@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toggleHabit } from "./actions";
+import { DeleteGoalButton } from "./delete-goal-button";
 import type { Goal, Habit } from "@/db/schema";
 import Link from "next/link";
 import { useT } from "@/lib/i18n/context";
@@ -40,12 +41,14 @@ export function GoalsList({
           ) : (
             <div className="space-y-2">
               {goals.map((goal) => (
-                <Link
+                <div
                   key={goal.id}
-                  href={`/goals/${goal.id}`}
-                  className="flex items-center justify-between py-2 border-b last:border-0 hover:bg-muted/50 px-2 rounded-md -mx-2 transition-colors"
+                  className="flex items-center justify-between gap-2 py-2 border-b last:border-0 px-2 -mx-2 rounded-md hover:bg-muted/50 transition-colors"
                 >
-                  <div className="flex items-baseline gap-2 flex-wrap min-w-0">
+                  <Link
+                    href={`/goals/${goal.id}`}
+                    className="flex items-baseline gap-2 flex-wrap min-w-0 flex-1"
+                  >
                     <span className="font-medium text-sm">{goal.title}</span>
                     <span className="text-xs text-muted-foreground">
                       {t.enums.periodType[goal.periodType]} · {t.enums.domain[goal.domain]}
@@ -53,11 +56,16 @@ export function GoalsList({
                         goalTitleMap[goal.parentId] &&
                         ` · ${t.goals.forGoal(goalTitleMap[goal.parentId])}`}
                     </span>
-                  </div>
+                  </Link>
                   <Badge variant={statusVariant[goal.status]} className="shrink-0">
                     {t.enums.status[goal.status]}
                   </Badge>
-                </Link>
+                  <DeleteGoalButton
+                    goalId={goal.id}
+                    goalTitle={goal.title}
+                    size="icon-sm"
+                  />
+                </div>
               ))}
             </div>
           )}

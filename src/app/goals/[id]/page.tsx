@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { DeleteGoalButton } from "../delete-goal-button";
 import { notFound } from "next/navigation";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
@@ -41,9 +42,16 @@ export default async function GoalDetailPage({
             {dict.enums.status[goal.status]}
           </Badge>
         </div>
-        <Link href="/goals">
-          <Button variant="outline">{dict.goals.backToGoals}</Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link href="/goals">
+            <Button variant="outline">{dict.goals.backToGoals}</Button>
+          </Link>
+          <DeleteGoalButton
+            goalId={goal.id}
+            goalTitle={goal.title}
+            redirectTo="/goals"
+          />
+        </div>
       </div>
 
       <p className="text-xs text-muted-foreground">

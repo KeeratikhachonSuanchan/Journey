@@ -213,6 +213,97 @@ export async function getGoalDetail(goalId: string) {
   };
 }
 
+// Walks the parent -> child chain starting at rootId and returns
+// [rootId, ...descendantIds] ordered shallow-to-deep, so reversing the
+// list gives a safe deepest-first delete order.
+async function collectGoalTree(rootId: string, userId: string) {
+  const all = await db
+    .select()
+    .from(goals)
+    .where(eq(goals.userId, userId));
+
+  const byParent = new Map<string | null, typeof all>();
+  for (const g of all) {
+    const key = g.parentId;
+    byParent.set(key, [...(byParent.get(key) ?? []), g]);
+  }
+
+  const ordered: string[] = [];
+  const queue = [rootId];
+  while (queue.length) {
+    const id = queue.shift()!;
+    ordered.push(id);
+    for (const child of byParent.get(id) ?? []) queue.push(child.id);
+  }
+  return ordered;
+}
+
+export async function getGoalDeletePreview(goalId: string) {
+  const userId = getCurrentUserId();
+  const goalIds = await collectGoalTree(goalId, userId);
+  const childIds = goalIds.filter((id) => id !== goalId);
+
+  const childTitles = childIds.length
+    ? (
+        await db
+          .select({ title: goals.title })
+          .from(goals)
+          .where(inArray(goals.id, childIds))
+      ).map((g) => g.title)
+    : [];
+
+  const affectedHabits = await db
+    .select({ id: habits.id })
+    .from(habits)
+    .where(inArray(habits.goalId, goalIds));
+  const habitIds = affectedHabits.map((h) => h.id);
+
+  const goalReflectionCount = (
+    await db
+      .select({ id: reflections.id })
+      .from(reflections)
+      .where(inArray(reflections.goalId, goalIds))
+  ).length;
+  const habitReflectionCount = habitIds.length
+    ? (
+        await db
+          .select({ id: reflections.id })
+          .from(reflections)
+          .where(inArray(reflections.habitId, habitIds))
+      ).length
+    : 0;
+
+  return {
+    childTitles,
+    habitCount: habitIds.length,
+    reflectionCount: goalReflectionCount + habitReflectionCount,
+  };
+}
+
+export async function deleteGoal(goalId: string) {
+  const userId = getCurrentUserId();
+  const goalIds = await collectGoalTree(goalId, userId);
+
+  const affectedHabits = await db
+    .select({ id: habits.id })
+    .from(habits)
+    .where(inArray(habits.goalId, goalIds));
+  const habitIds = affectedHabits.map((h) => h.id);
+
+  await db.delete(reflections).where(inArray(reflections.goalId, goalIds));
+  if (habitIds.length) {
+    await db.delete(reflections).where(inArray(reflections.habitId, habitIds));
+    await db.delete(habits).where(inArray(habits.id, habitIds));
+  }
+  for (const id of [...goalIds].reverse()) {
+    await db.delete(goals).where(and(eq(goals.id, id), eq(goals.userId, userId)));
+  }
+
+  revalidatePath("/goals");
+  revalidatePath("/today");
+  revalidatePath("/goals/review");
+}
+
 export async function getWeeklyReview() {
   const userId = getCurrentUserId();
   const todayDate = todayFn();

@@ -93,6 +93,17 @@ export interface Dictionary {
     active: string;
     paused: string;
     backToGoals: string;
+    delete: string;
+    cancel: string;
+    deleteGoalTitle: string;
+    loadingDeletePreview: string;
+    deleteGoalWarning: (info: {
+      title: string;
+      children: number;
+      habits: number;
+      reflections: number;
+    }) => string;
+    willDeleteChildren: string;
     reflectionHistory: (count: number) => string;
     noReflectionsYet: string;
     starting: string;
@@ -267,6 +278,17 @@ export const en: Dictionary = {
     active: "Active",
     paused: "Paused",
     backToGoals: "Back to Goals",
+    delete: "Delete",
+    cancel: "Cancel",
+    deleteGoalTitle: "Delete this goal?",
+    loadingDeletePreview: "Checking what's linked to this goal...",
+    deleteGoalWarning: ({ title, children, habits, reflections }) =>
+      `This will permanently delete "${title}"${
+        children ? `, ${children} linked goal${children === 1 ? "" : "s"}` : ""
+      }${habits ? `, ${habits} to-do${habits === 1 ? "" : "s"}` : ""}${
+        reflections ? `, and ${reflections} reflection${reflections === 1 ? "" : "s"}` : ""
+      }. This cannot be undone.`,
+    willDeleteChildren: "Goals that will also be deleted:",
     reflectionHistory: (count: number) => `Reflection History (${count})`,
     noReflectionsYet:
       "No reflections yet. Review this goal on the Today page.",
@@ -445,6 +467,17 @@ export const th: Dictionary = {
     active: "ใช้งานอยู่",
     paused: "หยุดชั่วคราว",
     backToGoals: "กลับไปเป้าหมาย",
+    delete: "ลบ",
+    cancel: "ยกเลิก",
+    deleteGoalTitle: "ลบเป้าหมายนี้?",
+    loadingDeletePreview: "กำลังตรวจสอบข้อมูลที่ผูกกับเป้าหมายนี้...",
+    deleteGoalWarning: ({ title, children, habits, reflections }) =>
+      `การลบนี้จะลบ "${title}"${children ? `, เป้าหมายย่อย ${children} รายการ` : ""}${
+        habits ? `, สิ่งที่ต้องทำ ${habits} รายการ` : ""
+      }${
+        reflections ? ` และการรีวิว ${reflections} รายการ` : ""
+      } อย่างถาวร ไม่สามารถกู้คืนได้`,
+    willDeleteChildren: "เป้าหมายย่อยที่จะถูกลบไปด้วย:",
     reflectionHistory: (count: number) => `ประวัติการรีวิว (${count})`,
     noReflectionsYet: "ยังไม่มีการรีวิว ไปรีวิวเป้าหมายนี้ที่หน้าวันนี้",
     starting: "เริ่ม",
