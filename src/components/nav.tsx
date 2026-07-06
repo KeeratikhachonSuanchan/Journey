@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
 import { LocaleToggle } from "./locale-toggle";
 import { LiveClock } from "./live-clock";
+import { MobileNav } from "./mobile-nav";
 import { useT } from "@/lib/i18n/context";
 
 export function Nav() {
@@ -28,7 +29,7 @@ export function Nav() {
         >
           Journey
         </Link>
-        <nav className="flex gap-1 flex-1">
+        <nav className="hidden flex-1 gap-1 md:flex">
           {links.map((link) => {
             const active =
               pathname === link.href || pathname.startsWith(link.href + "/");
@@ -51,9 +52,14 @@ export function Nav() {
             );
           })}
         </nav>
-        <LiveClock />
-        <LocaleToggle />
-        <ThemeToggle />
+        <div className="hidden items-center gap-1 md:flex">
+          <LiveClock />
+          <LocaleToggle />
+          <ThemeToggle />
+        </div>
+        <div className="flex flex-1 justify-end md:hidden">
+          <MobileNav links={links} />
+        </div>
       </div>
     </header>
   );
