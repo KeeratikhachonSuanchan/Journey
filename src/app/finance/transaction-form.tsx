@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DatePicker } from "@/components/ui/date-picker";
 import { addTransaction } from "./actions";
 import { formatDate } from "@/lib/dates";
 import type { Category } from "@/db/schema";
@@ -82,10 +83,9 @@ export function TransactionForm({
             </div>
             <div>
               <Label htmlFor="occurredOn">{t.finance.date}</Label>
-              <Input
+              <DatePicker
                 id="occurredOn"
                 name="occurredOn"
-                type="date"
                 defaultValue={formatDate(defaultDate)}
                 required
               />

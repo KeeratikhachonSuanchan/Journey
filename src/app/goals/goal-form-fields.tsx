@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DatePicker } from "@/components/ui/date-picker";
 import { formatDate, today } from "@/lib/dates";
 import { useT } from "@/lib/i18n/context";
 import type { Goal } from "@/db/schema";
@@ -39,49 +40,47 @@ export function GoalFormFields({
           required
         />
       </div>
+      <div>
+        <Label htmlFor="domain">{t.goals.domain}</Label>
+        <Select
+          name="domain"
+          required
+          defaultValue={defaultValues?.domain ?? "dev"}
+          items={{
+            dev: t.enums.domain.dev,
+            finance: t.enums.domain.finance,
+          }}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="dev">{t.enums.domain.dev}</SelectItem>
+            <SelectItem value="finance">{t.enums.domain.finance}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <Label htmlFor="domain">{t.goals.domain}</Label>
-          <Select
-            name="domain"
-            required
-            defaultValue={defaultValues?.domain ?? "dev"}
-            items={{
-              dev: t.enums.domain.dev,
-              finance: t.enums.domain.finance,
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="dev">{t.enums.domain.dev}</SelectItem>
-              <SelectItem value="finance">{t.enums.domain.finance}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
           <Label htmlFor={`${id}-periodStart`}>{t.goals.periodStart}</Label>
-          <Input
+          <DatePicker
             id={`${id}-periodStart`}
             name="periodStart"
-            type="date"
             defaultValue={defaultValues?.periodStart ?? formatDate(today())}
             required
           />
         </div>
-      </div>
-      <div>
-        <Label htmlFor={`${id}-periodEnd`}>
-          {t.goals.periodEnd}{" "}
-          <span className="text-muted-foreground">({t.common.optional})</span>
-        </Label>
-        <Input
-          id={`${id}-periodEnd`}
-          name="periodEnd"
-          type="date"
-          defaultValue={defaultValues?.periodEnd ?? ""}
-        />
+        <div>
+          <Label htmlFor={`${id}-periodEnd`}>
+            {t.goals.periodEnd}{" "}
+            <span className="text-muted-foreground">({t.common.optional})</span>
+          </Label>
+          <DatePicker
+            id={`${id}-periodEnd`}
+            name="periodEnd"
+            defaultValue={defaultValues?.periodEnd}
+          />
+        </div>
       </div>
       {linkableGoals.length > 0 && (
         <div>
