@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
+import { formatDate, today } from "@/lib/dates";
 
 export default async function GoalsPage() {
   const locale = await getLocale();
@@ -16,6 +17,7 @@ export default async function GoalsPage() {
     getGoalsList(),
     getLinkableGoals(),
   ]);
+  const todayStr = formatDate(today());
 
   return (
     <div className="space-y-6">
@@ -36,6 +38,7 @@ export default async function GoalsPage() {
         habits={data.habits}
         goalTitleMap={data.goalTitleMap}
         linkableGoals={linkableGoals}
+        todayStr={todayStr}
       />
     </div>
   );

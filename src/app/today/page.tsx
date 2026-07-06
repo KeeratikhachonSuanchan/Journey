@@ -14,7 +14,6 @@ export default async function TodayPage() {
     <div className="space-y-6">
       <h1 className="text-xl font-semibold tracking-tight">{dict.today.title}</h1>
       <TodayReviewList
-        dayGoals={data.dayGoals}
         activeHabits={data.activeHabits}
         existingReflections={data.todayReflections}
         todayStr={data.todayStr}

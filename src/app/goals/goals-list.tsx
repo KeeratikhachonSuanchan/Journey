@@ -8,6 +8,7 @@ import { DeleteGoalButton } from "./delete-goal-button";
 import { DeleteHabitButton } from "./delete-habit-button";
 import { EditGoalDialog } from "./edit-goal-dialog";
 import { EditHabitDialog } from "./edit-habit-dialog";
+import { ReflectGoalDialog } from "./reflect-goal-dialog";
 import { formatPeriodRange } from "./format-period";
 import type { Goal, Habit } from "@/db/schema";
 import Link from "next/link";
@@ -25,11 +26,13 @@ export function GoalsList({
   habits,
   goalTitleMap,
   linkableGoals,
+  todayStr,
 }: {
   goals: Goal[];
   habits: Habit[];
   goalTitleMap: Record<string, string>;
   linkableGoals: Goal[];
+  todayStr: string;
 }) {
   const t = useT();
 
@@ -66,6 +69,11 @@ export function GoalsList({
                   <Badge variant={statusVariant[goal.status]} className="shrink-0">
                     {t.enums.status[goal.status]}
                   </Badge>
+                  <ReflectGoalDialog
+                    goalId={goal.id}
+                    goalTitle={goal.title}
+                    todayStr={todayStr}
+                  />
                   <EditGoalDialog goal={goal} linkableGoals={linkableGoals} />
                   <DeleteGoalButton
                     goalId={goal.id}

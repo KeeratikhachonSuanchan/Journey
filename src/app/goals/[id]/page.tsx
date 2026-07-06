@@ -6,10 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { DeleteGoalButton } from "../delete-goal-button";
+import { ReflectGoalDialog } from "../reflect-goal-dialog";
 import { formatPeriodRange } from "../format-period";
 import { notFound } from "next/navigation";
 import { getLocale } from "@/lib/i18n/server";
 import { getDictionary } from "@/lib/i18n";
+import { formatDate, today } from "@/lib/dates";
 
 const statusVariant: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
   open: "outline",
@@ -47,6 +49,11 @@ export default async function GoalDetailPage({
           <Link href="/goals">
             <Button variant="outline">{dict.goals.backToGoals}</Button>
           </Link>
+          <ReflectGoalDialog
+            goalId={goal.id}
+            goalTitle={goal.title}
+            todayStr={formatDate(today())}
+          />
           <DeleteGoalButton
             goalId={goal.id}
             goalTitle={goal.title}

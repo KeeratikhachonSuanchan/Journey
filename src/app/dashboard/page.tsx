@@ -22,16 +22,13 @@ export default async function DashboardPage() {
     getTodayData(),
   ]);
 
-  const todayReflectedGoalIds = new Set(
-    todayData.todayReflections.filter((r) => r.goalId).map((r) => r.goalId)
-  );
   const todayReflectedHabitIds = new Set(
     todayData.todayReflections.filter((r) => r.habitId).map((r) => r.habitId)
   );
-  const totalTodayItems = todayData.dayGoals.length + todayData.activeHabits.length;
-  const pendingTodayCount =
-    todayData.dayGoals.filter((g) => !todayReflectedGoalIds.has(g.id)).length +
-    todayData.activeHabits.filter((h) => !todayReflectedHabitIds.has(h.id)).length;
+  const totalTodayItems = todayData.activeHabits.length;
+  const pendingTodayCount = todayData.activeHabits.filter(
+    (h) => !todayReflectedHabitIds.has(h.id)
+  ).length;
 
   const buckets = computeBucketSummary(
     financeData.transactions,

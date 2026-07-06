@@ -132,7 +132,6 @@ export interface Dictionary {
   today: {
     title: string;
     noItemsToday: string;
-    todaysGoals: string;
     habits: string;
     outcome: string;
     whyPlaceholder: string;
@@ -322,7 +321,6 @@ export const en: Dictionary = {
     title: "Today",
     noItemsToday:
       "No goals or to-dos for today. Create some on the Goals page!",
-    todaysGoals: "Today's Goals",
     habits: "To-dos",
     outcome: "Outcome",
     whyPlaceholder: "Why? (optional but valuable)",
@@ -510,7 +508,6 @@ export const th: Dictionary = {
   today: {
     title: "วันนี้",
     noItemsToday: "ไม่มีเป้าหมายหรือสิ่งที่ต้องทำสำหรับวันนี้ ไปสร้างที่หน้าเป้าหมายได้เลย!",
-    todaysGoals: "เป้าหมายวันนี้",
     habits: "สิ่งที่ต้องทำ",
     outcome: "ผลลัพธ์",
     whyPlaceholder: "ทำไม? (ไม่บังคับแต่มีประโยชน์มาก)",
