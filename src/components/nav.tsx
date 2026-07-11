@@ -18,6 +18,7 @@ export function Nav() {
     { href: "/finance", label: t.nav.finance },
     { href: "/today", label: t.nav.today },
     { href: "/goals", label: t.nav.goals },
+    { href: "/workout", label: t.nav.workout },
   ];
 
   return (

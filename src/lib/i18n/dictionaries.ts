@@ -4,6 +4,7 @@ export interface Dictionary {
     finance: string;
     today: string;
     goals: string;
+    workout: string;
   };
   common: {
     save: string;
@@ -184,6 +185,7 @@ export const en: Dictionary = {
     finance: "Finance",
     today: "Today",
     goals: "Goals",
+    workout: "Workout",
   },
   common: {
     save: "Save",
@@ -373,6 +375,7 @@ export const th: Dictionary = {
     finance: "การเงิน",
     today: "วันนี้",
     goals: "เป้าหมาย",
+    workout: "ออกกำลังกาย",
   },
   common: {
     save: "บันทึก",
