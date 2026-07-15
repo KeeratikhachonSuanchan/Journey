@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Trash2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -27,27 +27,37 @@ export function DeleteGoalButton({
   goalTitle,
   redirectTo,
   size = "sm",
+  open: controlledOpen,
+  onOpenChange,
+  hideTrigger = false,
 }: {
   goalId: string;
   goalTitle: string;
   redirectTo?: string;
   size?: "sm" | "icon-sm";
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
 }) {
   const t = useT();
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen ?? internalOpen;
+  const setOpen = onOpenChange ?? setInternalOpen;
   const [preview, setPreview] = useState<Preview | null>(null);
-  const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const loading = open && preview === null;
 
-  async function handleOpenChange(next: boolean) {
-    setOpen(next);
-    if (next) {
-      setLoading(true);
-      setPreview(await getGoalDeletePreview(goalId));
-      setLoading(false);
-    }
-  }
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+    getGoalDeletePreview(goalId).then((result) => {
+      if (!cancelled) setPreview(result);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [open, goalId]);
 
   async function handleConfirm() {
     setDeleting(true);
@@ -62,20 +72,22 @@ export function DeleteGoalButton({
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <Button
-        type="button"
-        variant="destructive"
-        size={size}
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          handleOpenChange(true);
-        }}
-      >
-        <Trash2Icon />
-        {size === "sm" && t.goals.delete}
-      </Button>
+    <Dialog open={open} onOpenChange={setOpen}>
+      {!hideTrigger && (
+        <Button
+          type="button"
+          variant="destructive"
+          size={size}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setOpen(true);
+          }}
+        >
+          <Trash2Icon />
+          {size === "sm" && t.goals.delete}
+        </Button>
+      )}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t.goals.deleteGoalTitle}</DialogTitle>

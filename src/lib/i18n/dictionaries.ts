@@ -13,6 +13,7 @@ export interface Dictionary {
     back: string;
     optional: string;
     cancel: string;
+    options: string;
   };
   dashboard: {
     title: string;
@@ -141,6 +142,14 @@ export interface Dictionary {
     completedTab: (count: number) => string;
     noPendingItems: string;
     noCompletedItems: string;
+    testReminderButton: string;
+    testReminderSending: string;
+    testReminderSent: (count: number) => string;
+    testReminderNothingPending: string;
+    testReminderFailed: string;
+    reminderTimeLabel: string;
+    reminderTimeSaved: string;
+    reminderTimeFailed: string;
   };
   enums: {
     outcome: {
@@ -194,6 +203,7 @@ export const en: Dictionary = {
     back: "Back",
     optional: "optional",
     cancel: "Cancel",
+    options: "Options",
   },
   dashboard: {
     title: "Dashboard",
@@ -331,6 +341,14 @@ export const en: Dictionary = {
     completedTab: (count: number) => `Completed (${count})`,
     noPendingItems: "Nothing left to review — nice work!",
     noCompletedItems: "Nothing completed yet today.",
+    testReminderButton: "Send test LINE reminder",
+    testReminderSending: "Sending…",
+    testReminderSent: (count: number) => `Sent (${count} pending)`,
+    testReminderNothingPending: "Nothing pending — no message sent",
+    testReminderFailed: "Failed to send",
+    reminderTimeLabel: "Daily reminder time",
+    reminderTimeSaved: "Saved",
+    reminderTimeFailed: "Failed to save",
   },
   enums: {
     outcome: {
@@ -384,6 +402,7 @@ export const th: Dictionary = {
     back: "กลับ",
     optional: "ไม่บังคับ",
     cancel: "ยกเลิก",
+    options: "ตัวเลือก",
   },
   dashboard: {
     title: "แดชบอร์ด",
@@ -519,6 +538,14 @@ export const th: Dictionary = {
     completedTab: (count: number) => `ทำแล้ว (${count})`,
     noPendingItems: "ไม่มีอะไรต้องรีวิวแล้ว เก่งมาก!",
     noCompletedItems: "วันนี้ยังไม่มีรายการที่ทำสำเร็จ",
+    testReminderButton: "ทดสอบส่งแจ้งเตือน LINE",
+    testReminderSending: "กำลังส่ง...",
+    testReminderSent: (count: number) => `ส่งแล้ว (${count} รายการค้าง)`,
+    testReminderNothingPending: "ไม่มีรายการค้าง เลยไม่ได้ส่ง",
+    testReminderFailed: "ส่งไม่สำเร็จ",
+    reminderTimeLabel: "เวลาแจ้งเตือนประจำวัน",
+    reminderTimeSaved: "บันทึกแล้ว",
+    reminderTimeFailed: "บันทึกไม่สำเร็จ",
   },
   enums: {
     outcome: {

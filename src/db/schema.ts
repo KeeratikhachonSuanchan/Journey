@@ -44,6 +44,8 @@ export const bucketEnum = pgEnum("bucket", ["needs", "wants", "savings"]);
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   email: text("email").notNull(),
+  reminderTime: text("reminder_time"),
+  qstashScheduleId: text("qstash_schedule_id"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 

@@ -20,13 +20,21 @@ import type { Goal, Habit } from "@/db/schema";
 export function EditHabitDialog({
   habit,
   linkableGoals,
+  open: controlledOpen,
+  onOpenChange,
+  hideTrigger = false,
 }: {
   habit: Habit;
   linkableGoals: Goal[];
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
 }) {
   const t = useT();
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen ?? internalOpen;
+  const setOpen = onOpenChange ?? setInternalOpen;
   const [saving, setSaving] = useState(false);
 
   async function handleSubmit(formData: FormData) {
@@ -39,14 +47,16 @@ export function EditHabitDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button
-        type="button"
-        variant="outline"
-        size="icon-sm"
-        onClick={() => setOpen(true)}
-      >
-        <PencilIcon />
-      </Button>
+      {!hideTrigger && (
+        <Button
+          type="button"
+          variant="outline"
+          size="icon-sm"
+          onClick={() => setOpen(true)}
+        >
+          <PencilIcon />
+        </Button>
+      )}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t.goals.editHabit}</DialogTitle>

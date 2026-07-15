@@ -20,14 +20,22 @@ import type { Goal } from "@/db/schema";
 export function EditGoalDialog({
   goal,
   linkableGoals,
+  open: controlledOpen,
+  onOpenChange,
+  hideTrigger = false,
 }: {
   goal: Goal;
   linkableGoals: Goal[];
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
 }) {
   const t = useT();
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen ?? internalOpen;
+  const setOpen = onOpenChange ?? setInternalOpen;
   const [saving, setSaving] = useState(false);
 
   async function handleSubmit(formData: FormData) {
@@ -40,18 +48,20 @@ export function EditGoalDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button
-        type="button"
-        variant="outline"
-        size="icon-sm"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setOpen(true);
-        }}
-      >
-        <PencilIcon />
-      </Button>
+      {!hideTrigger && (
+        <Button
+          type="button"
+          variant="outline"
+          size="icon-sm"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setOpen(true);
+          }}
+        >
+          <PencilIcon />
+        </Button>
+      )}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t.goals.editGoal}</DialogTitle>

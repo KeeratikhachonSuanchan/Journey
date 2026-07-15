@@ -22,6 +22,13 @@
       "when": 1783634400000,
       "tag": "0002_goal_period_range_and_cadence",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1784130463418,
+      "tag": "0003_zippy_siren",
+      "breakpoints": true
     }
   ]
 }

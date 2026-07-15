@@ -1,8 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreVerticalIcon, PencilIcon, Trash2Icon } from "lucide-react";
 import { toggleHabit } from "./actions";
 import { DeleteGoalButton } from "./delete-goal-button";
 import { DeleteHabitButton } from "./delete-habit-button";
@@ -13,6 +21,111 @@ import { formatPeriodRange } from "./format-period";
 import type { Goal, Habit } from "@/db/schema";
 import Link from "next/link";
 import { useT } from "@/lib/i18n/context";
+
+function GoalOptionsMenu({
+  goal,
+  linkableGoals,
+}: {
+  goal: Goal;
+  linkableGoals: Goal[];
+}) {
+  const t = useT();
+  const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+        >
+          <MoreVerticalIcon />
+          <span className="sr-only">{t.common.options}</span>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem onClick={() => setEditOpen(true)}>
+            <PencilIcon />
+            {t.goals.editGoal}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            variant="destructive"
+            onClick={() => setDeleteOpen(true)}
+          >
+            <Trash2Icon />
+            {t.goals.delete}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <EditGoalDialog
+        goal={goal}
+        linkableGoals={linkableGoals}
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        hideTrigger
+      />
+      <DeleteGoalButton
+        goalId={goal.id}
+        goalTitle={goal.title}
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        hideTrigger
+      />
+    </>
+  );
+}
+
+function HabitOptionsMenu({
+  habit,
+  linkableGoals,
+}: {
+  habit: Habit;
+  linkableGoals: Goal[];
+}) {
+  const t = useT();
+  const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <MoreVerticalIcon />
+          <span className="sr-only">{t.common.options}</span>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem onClick={() => setEditOpen(true)}>
+            <PencilIcon />
+            {t.goals.editHabit}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            variant="destructive"
+            onClick={() => setDeleteOpen(true)}
+          >
+            <Trash2Icon />
+            {t.goals.delete}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <EditHabitDialog
+        habit={habit}
+        linkableGoals={linkableGoals}
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        hideTrigger
+      />
+      <DeleteHabitButton
+        habitId={habit.id}
+        habitTitle={habit.title}
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        hideTrigger
+      />
+    </>
+  );
+}
 
 const statusVariant: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
   open: "outline",
@@ -74,12 +187,7 @@ export function GoalsList({
                     goalTitle={goal.title}
                     todayStr={todayStr}
                   />
-                  <EditGoalDialog goal={goal} linkableGoals={linkableGoals} />
-                  <DeleteGoalButton
-                    goalId={goal.id}
-                    goalTitle={goal.title}
-                    size="icon-sm"
-                  />
+                  <GoalOptionsMenu goal={goal} linkableGoals={linkableGoals} />
                 </div>
               ))}
             </div>
@@ -124,8 +232,7 @@ export function GoalsList({
                         {habit.active ? t.goals.active : t.goals.paused}
                       </Button>
                     </form>
-                    <EditHabitDialog habit={habit} linkableGoals={linkableGoals} />
-                    <DeleteHabitButton habitId={habit.id} habitTitle={habit.title} />
+                    <HabitOptionsMenu habit={habit} linkableGoals={linkableGoals} />
                   </div>
                 </div>
               ))}

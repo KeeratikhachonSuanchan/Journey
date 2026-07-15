@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -8,16 +9,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n/context";
+
+type Outcome = "achieved" | "partial" | "missed";
 
 export function ReflectionFields() {
   const t = useT();
+  const [outcome, setOutcome] = useState<Outcome | null>(null);
+
+  // Why/Tag only make sense when explaining a shortfall — keep them mounted
+  // (so typed values survive toggling outcome back and forth) but hidden
+  // until the outcome isn't "achieved".
+  const showReasonFields = outcome === "partial" || outcome === "missed";
 
   return (
     <>
       <Select
         name="outcome"
         required
+        value={outcome}
+        onValueChange={(value) => setOutcome(value as Outcome)}
         items={{
           achieved: t.enums.outcome.achieved,
           partial: t.enums.outcome.partial,
@@ -37,7 +49,7 @@ export function ReflectionFields() {
       <Input
         name="reason"
         placeholder={t.today.whyPlaceholder}
-        className="flex-1 min-w-[200px]"
+        className={cn("flex-1 min-w-[200px]", !showReasonFields && "hidden")}
       />
 
       <Select
@@ -50,7 +62,7 @@ export function ReflectionFields() {
           other: t.enums.reasonTag.other,
         }}
       >
-        <SelectTrigger className="w-[120px]">
+        <SelectTrigger className={cn("w-[120px]", !showReasonFields && "hidden")}>
           <SelectValue placeholder={t.today.tag} />
         </SelectTrigger>
         <SelectContent>
