@@ -5,7 +5,7 @@ import { goals, habits, reflections } from "@/db/schema";
 import { getCurrentUserId } from "@/lib/currentUser";
 import { eq, and, or, gte, lte, lt, isNull, desc, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { formatDate, weekStart, today as todayFn } from "@/lib/dates";
+import { formatDate, weekStart, today as todayFn, dayOfWeek } from "@/lib/dates";
 import { addDays, addWeeks } from "date-fns";
 
 function parseGoalFields(formData: FormData) {
@@ -51,8 +51,13 @@ function parseHabitFields(formData: FormData) {
   const cadence = formData.get("cadence") as Cadence;
   const rawGoalId = formData.get("goalId") as string;
   const goalId = rawGoalId && rawGoalId !== "none" ? rawGoalId : null;
+  const rawDurationMinutes = formData.get("durationMinutes") as string;
+  const durationMinutes = rawDurationMinutes ? parseInt(rawDurationMinutes, 10) : null;
+  const rawDaysOfWeek = formData.getAll("daysOfWeek").map((v) => parseInt(v as string, 10));
+  const daysOfWeek =
+    rawDaysOfWeek.length === 0 || rawDaysOfWeek.length === 7 ? null : rawDaysOfWeek;
 
-  return { title, cadence, goalId };
+  return { title, cadence, goalId, durationMinutes, daysOfWeek };
 }
 
 export async function createHabit(formData: FormData) {
@@ -178,10 +183,14 @@ export async function getTodayData() {
       )
     );
 
-  const activeHabits = await db
+  const todayDow = dayOfWeek(todayDate);
+  const allActiveHabits = await db
     .select()
     .from(habits)
     .where(and(eq(habits.userId, userId), eq(habits.active, true)));
+  const activeHabits = allActiveHabits.filter(
+    (h) => !h.daysOfWeek || h.daysOfWeek.length === 0 || h.daysOfWeek.includes(todayDow)
+  );
 
   const todayReflections = await db
     .select()

@@ -12,10 +12,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DatePicker } from "@/components/ui/date-picker";
-import { addTransaction } from "./actions";
+import { addTransaction, type SlipExtraction } from "./actions";
+import { ScanSlipDialog } from "./scan-slip-dialog";
 import { formatDate } from "@/lib/dates";
 import type { Category } from "@/db/schema";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useT } from "@/lib/i18n/context";
 
 export function TransactionForm({
@@ -27,16 +28,30 @@ export function TransactionForm({
 }) {
   const t = useT();
   const formRef = useRef<HTMLFormElement>(null);
+  // Bumped whenever a slip scan lands, forcing the uncontrolled amount/date/note
+  // fields below to remount with new defaultValues instead of turning this
+  // form into fully controlled state.
+  const [formKey, setFormKey] = useState(0);
+  const [prefill, setPrefill] = useState<SlipExtraction | null>(null);
 
   async function handleSubmit(formData: FormData) {
     await addTransaction(formData);
     formRef.current?.reset();
+    setPrefill(null);
+  }
+
+  function handleExtracted(data: SlipExtraction) {
+    setPrefill(data);
+    setFormKey((k) => k + 1);
   }
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between gap-2">
         <CardTitle>{t.finance.addTransaction}</CardTitle>
+        {categories.length > 0 && (
+          <ScanSlipDialog onExtracted={handleExtracted} />
+        )}
       </CardHeader>
       <CardContent>
         {categories.length === 0 ? (
@@ -48,12 +63,14 @@ export function TransactionForm({
             <div>
               <Label htmlFor="amount">{t.finance.amount}</Label>
               <Input
+                key={`amount-${formKey}`}
                 id="amount"
                 name="amount"
                 type="number"
                 step="0.01"
                 min="0.01"
                 placeholder="0.00"
+                defaultValue={prefill?.amount ?? undefined}
                 required
               />
             </div>
@@ -84,9 +101,10 @@ export function TransactionForm({
             <div>
               <Label htmlFor="occurredOn">{t.finance.date}</Label>
               <DatePicker
+                key={`occurredOn-${formKey}`}
                 id="occurredOn"
                 name="occurredOn"
-                defaultValue={formatDate(defaultDate)}
+                defaultValue={prefill?.occurredOn ?? formatDate(defaultDate)}
                 required
               />
             </div>
@@ -94,7 +112,13 @@ export function TransactionForm({
               <Label htmlFor="note">
                 {t.finance.note} ({t.common.optional})
               </Label>
-              <Input id="note" name="note" placeholder={t.finance.whatWasThisFor} />
+              <Input
+                key={`note-${formKey}`}
+                id="note"
+                name="note"
+                placeholder={t.finance.whatWasThisFor}
+                defaultValue={prefill?.note ?? undefined}
+              />
             </div>
             <Button type="submit" className="w-full">
               {t.finance.addTransaction}

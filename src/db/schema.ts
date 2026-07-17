@@ -84,6 +84,9 @@ export const habits = pgTable(
     goalId: uuid("goal_id").references(() => goals.id),
     title: text("title").notNull(),
     cadence: cadenceEnum("cadence").notNull(),
+    durationMinutes: integer("duration_minutes"),
+    // 0=Sunday..6=Saturday (matches Date.getDay()); null/empty means every day.
+    daysOfWeek: integer("days_of_week").array(),
     active: boolean("active").default(true).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },

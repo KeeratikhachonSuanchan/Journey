@@ -1,0 +1,1 @@
+ALTER TABLE "habits" ADD COLUMN "days_of_week" integer[];

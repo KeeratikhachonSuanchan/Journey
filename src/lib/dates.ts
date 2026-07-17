@@ -50,6 +50,12 @@ export function today(): Date {
   return nowInBangkok();
 }
 
+// 0=Sunday..6=Saturday, matching Date.getDay() — used to match against
+// habits.daysOfWeek, which is stored in the same convention.
+export function dayOfWeek(d: Date): number {
+  return d.getDay();
+}
+
 export function todayStr(): string {
   return formatDate(today());
 }

@@ -18,6 +18,7 @@ import { EditGoalDialog } from "./edit-goal-dialog";
 import { EditHabitDialog } from "./edit-habit-dialog";
 import { ReflectGoalDialog } from "./reflect-goal-dialog";
 import { formatPeriodRange } from "./format-period";
+import { summarizeDaysOfWeek } from "./format-days";
 import type { Goal, Habit } from "@/db/schema";
 import Link from "next/link";
 import { useT } from "@/lib/i18n/context";
@@ -215,6 +216,10 @@ export function GoalsList({
                     <span className="font-medium text-sm">{habit.title}</span>
                     <span className="text-xs text-muted-foreground">
                       {t.enums.cadence[habit.cadence]}
+                      {habit.durationMinutes != null &&
+                        ` · ${t.goals.durationMinutes(habit.durationMinutes)}`}
+                      {summarizeDaysOfWeek(habit.daysOfWeek, t) &&
+                        ` · ${summarizeDaysOfWeek(habit.daysOfWeek, t)}`}
                       {habit.goalId &&
                         goalTitleMap[habit.goalId] &&
                         ` · ${t.goals.forGoal(goalTitleMap[habit.goalId])}`}

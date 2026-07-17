@@ -66,6 +66,12 @@ export interface Dictionary {
     remaining: string;
     over: string;
     backToFinance: string;
+    scanSlip: string;
+    scanSlipDialogTitle: string;
+    scanSlipUploadLabel: string;
+    scanSlipSubmit: string;
+    scanSlipExtracting: string;
+    scanSlipFailed: string;
   };
   review: {
     overall: string;
@@ -88,6 +94,13 @@ export interface Dictionary {
     newHabit: string;
     habitTitlePlaceholder: string;
     cadence: string;
+    duration: string;
+    durationPlaceholder: string;
+    durationMinutes: (minutes: number) => string;
+    daysOfWeek: string;
+    everyDay: string;
+    weekdays: string;
+    weekends: string;
     createHabit: string;
     editHabit: string;
     goalsCount: (count: number) => string;
@@ -174,6 +187,15 @@ export interface Dictionary {
       monthly: string;
       quarterly: string;
     };
+    dayOfWeek: {
+      0: string;
+      1: string;
+      2: string;
+      3: string;
+      4: string;
+      5: string;
+      6: string;
+    };
     domain: {
       finance: string;
       dev: string;
@@ -258,6 +280,12 @@ export const en: Dictionary = {
     remaining: "remaining",
     over: "over",
     backToFinance: "Back to Finance",
+    scanSlip: "Scan Slip",
+    scanSlipDialogTitle: "Scan a transfer slip",
+    scanSlipUploadLabel: "Upload a photo of the slip",
+    scanSlipSubmit: "Extract",
+    scanSlipExtracting: "Reading slip...",
+    scanSlipFailed: "Couldn't read the slip clearly. Please fill in the details manually.",
   },
   review: {
     overall: "Overall",
@@ -280,6 +308,13 @@ export const en: Dictionary = {
     newHabit: "New To-do",
     habitTitlePlaceholder: "What do you need to do?",
     cadence: "Cadence",
+    duration: "Duration",
+    durationPlaceholder: "Minutes, e.g. 30",
+    durationMinutes: (minutes: number) => `${minutes} min`,
+    daysOfWeek: "Days of week",
+    everyDay: "Every day",
+    weekdays: "Mon–Fri",
+    weekends: "Sat–Sun",
     createHabit: "Create To-do",
     editHabit: "Edit To-do",
     goalsCount: (count: number) => `Goals (${count})`,
@@ -373,6 +408,15 @@ export const en: Dictionary = {
       monthly: "Monthly",
       quarterly: "Quarterly",
     },
+    dayOfWeek: {
+      0: "Sun",
+      1: "Mon",
+      2: "Tue",
+      3: "Wed",
+      4: "Thu",
+      5: "Fri",
+      6: "Sat",
+    },
     domain: {
       finance: "Finance",
       dev: "Self-Development",
@@ -457,6 +501,12 @@ export const th: Dictionary = {
     remaining: "คงเหลือ",
     over: "เกิน",
     backToFinance: "กลับไปการเงิน",
+    scanSlip: "สแกนสลิป",
+    scanSlipDialogTitle: "สแกนสลิปโอนเงิน",
+    scanSlipUploadLabel: "อัปโหลดรูปสลิป",
+    scanSlipSubmit: "อ่านข้อมูล",
+    scanSlipExtracting: "กำลังอ่านสลิป...",
+    scanSlipFailed: "ไม่สามารถอ่านสลิปได้ชัดเจน กรุณากรอกรายละเอียดด้วยตนเอง",
   },
   review: {
     overall: "ภาพรวม",
@@ -479,6 +529,13 @@ export const th: Dictionary = {
     newHabit: "สิ่งที่ต้องทำใหม่",
     habitTitlePlaceholder: "อยากสร้างสิ่งที่ต้องทำอะไร?",
     cadence: "ความถี่",
+    duration: "ระยะเวลา",
+    durationPlaceholder: "จำนวนนาที เช่น 30",
+    durationMinutes: (minutes: number) => `${minutes} นาที`,
+    daysOfWeek: "วันในสัปดาห์",
+    everyDay: "ทุกวัน",
+    weekdays: "จ.-ศ.",
+    weekends: "ส.-อา.",
     createHabit: "สร้างสิ่งที่ต้องทำ",
     editHabit: "แก้ไขสิ่งที่ต้องทำ",
     goalsCount: (count: number) => `เป้าหมาย (${count})`,
@@ -569,6 +626,15 @@ export const th: Dictionary = {
       weekly: "ทุกสัปดาห์",
       monthly: "ทุกเดือน",
       quarterly: "ทุกไตรมาส",
+    },
+    dayOfWeek: {
+      0: "อา.",
+      1: "จ.",
+      2: "อ.",
+      3: "พ.",
+      4: "พฤ.",
+      5: "ศ.",
+      6: "ส.",
     },
     domain: {
       finance: "การเงิน",

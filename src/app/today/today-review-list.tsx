@@ -6,6 +6,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { InlineReflectionForm } from "@/components/inline-reflection-form";
 import type { Habit, Reflection } from "@/db/schema";
 import { useT } from "@/lib/i18n/context";
+import { summarizeDaysOfWeek } from "@/app/goals/format-days";
 
 export function TodayReviewList({
   activeHabits,
@@ -71,6 +72,10 @@ export function TodayReviewList({
                       <span className="font-medium">{habit.title}</span>
                       <span className="text-xs text-muted-foreground">
                         {t.enums.cadence[habit.cadence]}
+                        {habit.durationMinutes != null &&
+                          ` · ${t.goals.durationMinutes(habit.durationMinutes)}`}
+                        {summarizeDaysOfWeek(habit.daysOfWeek, t) &&
+                          ` · ${summarizeDaysOfWeek(habit.daysOfWeek, t)}`}
                         {habit.goalId &&
                           goalTitleMap[habit.goalId] &&
                           ` · ${t.goals.forGoal(goalTitleMap[habit.goalId])}`}
@@ -118,6 +123,10 @@ export function TodayReviewList({
                         </Badge>
                         <span className="text-xs text-muted-foreground">
                           {t.enums.cadence[habit.cadence]}
+                          {habit.durationMinutes != null &&
+                            ` · ${t.goals.durationMinutes(habit.durationMinutes)}`}
+                          {summarizeDaysOfWeek(habit.daysOfWeek, t) &&
+                            ` · ${summarizeDaysOfWeek(habit.daysOfWeek, t)}`}
                           {habit.goalId &&
                             goalTitleMap[habit.goalId] &&
                             ` · ${t.goals.forGoal(goalTitleMap[habit.goalId])}`}
