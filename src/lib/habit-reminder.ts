@@ -1,7 +1,7 @@
 import { db } from "@/db";
 import { goals, habits, reflections } from "@/db/schema";
 import { getCurrentUserId } from "@/lib/currentUser";
-import { formatDate, today } from "@/lib/dates";
+import { dayOfWeek, formatDate, today } from "@/lib/dates";
 import { broadcastLineMessages, buildHabitReminderFlex } from "@/lib/line";
 import { and, eq, inArray } from "drizzle-orm";
 
@@ -10,12 +10,17 @@ export async function sendHabitReminder(): Promise<{
   pending: number;
 }> {
   const userId = getCurrentUserId();
-  const todayStr = formatDate(today());
+  const todayDate = today();
+  const todayStr = formatDate(todayDate);
+  const todayDow = dayOfWeek(todayDate);
 
-  const activeHabits = await db
+  const allActiveHabits = await db
     .select()
     .from(habits)
     .where(and(eq(habits.userId, userId), eq(habits.active, true)));
+  const activeHabits = allActiveHabits.filter(
+    (h) => !h.daysOfWeek || h.daysOfWeek.length === 0 || h.daysOfWeek.includes(todayDow)
+  );
 
   const todayReflections = await db
     .select()
