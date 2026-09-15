@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Spinner } from "@/components/spinner";
 import { cn } from "@/lib/utils";
 import { submitReview, type QueueCard } from "../actions";
 import { useT } from "@/lib/i18n/context";
@@ -38,7 +39,7 @@ export function ReviewSession({
   const [flipped, setFlipped] = useState(false);
   const [results, setResults] = useState<ReviewResult[]>([]);
   const [error, setError] = useState(false);
-  const [, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
   // Guards against answering the same card twice — e.g. a fast double-tap or
   // a duplicate touch/click event firing before React re-renders and removes
   // these buttons — which would otherwise advance `index` by 2 and skip a
@@ -126,7 +127,13 @@ export function ReviewSession({
       <div className="space-y-1.5">
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>{t.remaining(remaining)}</span>
-          {error && <span className="text-destructive">{t.saveFailed}</span>}
+          <div className="flex items-center gap-1.5">
+            {/* The card itself already advanced — this just acknowledges the
+                background save from the *previous* answer, so it never blocks
+                moving to the next word. */}
+            {isPending && <Spinner className="size-3 text-muted-foreground" />}
+            {error && <span className="text-destructive">{t.saveFailed}</span>}
+          </div>
         </div>
         <div className="h-2 rounded-full bg-muted overflow-hidden">
           <div
