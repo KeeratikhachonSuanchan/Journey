@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -26,12 +26,19 @@ export function ReviewSession({ cards, dueTotal }: { cards: QueueCard[]; dueTota
   const [results, setResults] = useState<ReviewResult[]>([]);
   const [error, setError] = useState(false);
   const [, startTransition] = useTransition();
+  // Guards against answering the same card twice — e.g. a fast double-tap or
+  // a duplicate touch/click event firing before React re-renders and removes
+  // these buttons — which would otherwise advance `index` by 2 and skip a
+  // card the user never actually saw.
+  const answeredIndexRef = useRef(-1);
 
   const current = cards[index];
   const done = index >= cards.length;
 
   function answer(result: ReviewResult) {
     if (!current) return;
+    if (answeredIndexRef.current === index) return;
+    answeredIndexRef.current = index;
     const cardId = current.cardId;
     // Advance immediately — the write happens in the background, so there's
     // no per-card network wait. submitReview does not revalidate this route,
