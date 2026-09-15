@@ -9,6 +9,7 @@ import {
   timestamp,
   pgEnum,
   index,
+  uniqueIndex,
   check,
   type AnyPgColumn,
 } from "drizzle-orm/pg-core";
@@ -38,6 +39,25 @@ export const reasonTagEnum = pgEnum("reason_tag", [
   "other",
 ]);
 export const bucketEnum = pgEnum("bucket", ["needs", "wants", "savings"]);
+
+// Declaration order is significant: Postgres sorts enum columns by declaration
+// order, so `orderBy(asc(vocabCards.level))` yields A1 -> A2 -> B1 -> B2 for free.
+export const vocabLevelEnum = pgEnum("vocab_level", ["A1", "A2", "B1", "B2"]);
+export const vocabSourceEnum = pgEnum("vocab_source", ["user", "common"]);
+export const reviewResultEnum = pgEnum("review_result", [
+  "again",
+  "hard",
+  "good",
+  "easy",
+]);
+export const englishPhaseEnum = pgEnum("english_phase", [
+  "foundation_fix",
+  "listening_immersion",
+  "shadowing",
+  "real_conversation",
+  "role_play",
+  "reading_writing",
+]);
 
 // --- Tables ---
 
@@ -163,6 +183,117 @@ export const transactions = pgTable(
   (table) => [index("transactions_user_date_idx").on(table.userId, table.occurredOn)]
 );
 
+// The vocabulary catalog. Deliberately NOT uuid-keyed: seeded rows keep the id
+// from their batch file ("c0101", "u001") so re-running the importer is
+// idempotent and rows stay legible in Drizzle Studio; words added from the UI
+// use crypto.randomUUID() in the same text column.
+//
+// user_id is the one deliberate exception to "every table carries user_id and
+// every query filters by it": it is NULL for shared "common" cards (a content
+// catalog, not user data — see CLAUDE.md) and set for words this user added.
+// Never filter this table with a bare eq(userId) — use visibleCards(userId)
+// from src/lib/srs/queries.ts.
+export const vocabCards = pgTable(
+  "vocab_cards",
+  {
+    id: text("id").primaryKey(),
+    userId: uuid("user_id").references(() => users.id),
+    word: text("word").notNull(),
+    meaning: text("meaning").notNull(),
+    level: vocabLevelEnum("level").notNull(),
+    example: text("example").notNull(),
+    source: vocabSourceEnum("source").notNull(),
+    pos: text("pos"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("vocab_cards_user_level_idx").on(table.userId, table.level),
+    index("vocab_cards_word_idx").on(table.word),
+    check(
+      "vocab_card_source_owner",
+      sql`(source = 'common' AND user_id IS NULL) OR (source = 'user' AND user_id IS NOT NULL)`
+    ),
+  ]
+);
+
+// One row per (user, card) the user has actually started reviewing. Rows are
+// created lazily on the first answer, never eagerly for the whole catalog —
+// see submitReview() in src/app/english/actions.ts.
+export const vocabReviewStates = pgTable(
+  "vocab_review_states",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id),
+    cardId: text("card_id")
+      .notNull()
+      .references(() => vocabCards.id),
+    box: integer("box").default(1).notNull(),
+    // Date-only and Bangkok-anchored (src/lib/dates.ts), unlike srs-logic.ts's
+    // UTC ISO timestamps — see src/lib/srs/adapter.ts for the conversion.
+    dueDate: date("due_date").notNull(),
+    lastReviewedOn: date("last_reviewed_on"),
+    // Drives the daily new-card intake cap (src/lib/srs/config.ts).
+    introducedOn: date("introduced_on").notNull(),
+    totalReviews: integer("total_reviews").default(0).notNull(),
+    correctStreak: integer("correct_streak").default(0).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    // The repo's first unique index. Load-bearing: submitReview() uses it as
+    // the ON CONFLICT arbiter so a double-tap on mobile can't create two
+    // states for one card (which would leave the card due twice, forever).
+    uniqueIndex("vocab_review_states_user_card_idx").on(table.userId, table.cardId),
+    index("vocab_review_states_user_due_idx").on(table.userId, table.dueDate),
+    index("vocab_review_states_user_introduced_idx").on(table.userId, table.introducedOn),
+    check("vocab_review_states_box_range", sql`box >= 1 AND box <= 6`),
+  ]
+);
+
+// Append-only answer log. Powers the activity chart and the review half of the
+// streak — neither is recoverable from vocab_review_states, which only keeps
+// each card's latest review.
+export const vocabReviewLogs = pgTable(
+  "vocab_review_logs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id),
+    cardId: text("card_id")
+      .notNull()
+      .references(() => vocabCards.id),
+    result: reviewResultEnum("result").notNull(),
+    boxAfter: integer("box_after").notNull(),
+    occurredOn: date("occurred_on").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [index("vocab_review_logs_user_date_idx").on(table.userId, table.occurredOn)]
+);
+
+// One row per roadmap checklist item the user ticked on a given day. The 6
+// phases and their item keys are static content in
+// src/app/english/roadmap-data.ts — item_key values are permanent identifiers;
+// renaming one orphans its history here.
+export const englishPracticeLogs = pgTable(
+  "english_practice_logs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id),
+    phase: englishPhaseEnum("phase").notNull(),
+    itemKey: text("item_key").notNull(),
+    occurredOn: date("occurred_on").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("english_practice_logs_user_date_idx").on(table.userId, table.occurredOn),
+    index("english_practice_logs_user_phase_idx").on(table.userId, table.phase),
+  ]
+);
+
 // --- Types ---
 
 export type User = typeof users.$inferSelect;
@@ -172,3 +303,12 @@ export type Reflection = typeof reflections.$inferSelect;
 export type Budget = typeof budgets.$inferSelect;
 export type Category = typeof categories.$inferSelect;
 export type Transaction = typeof transactions.$inferSelect;
+export type VocabCard = typeof vocabCards.$inferSelect;
+export type VocabReviewState = typeof vocabReviewStates.$inferSelect;
+export type VocabReviewLog = typeof vocabReviewLogs.$inferSelect;
+export type EnglishPracticeLog = typeof englishPracticeLogs.$inferSelect;
+
+export type VocabLevel = (typeof vocabLevelEnum.enumValues)[number];
+export type VocabSource = (typeof vocabSourceEnum.enumValues)[number];
+export type ReviewResult = (typeof reviewResultEnum.enumValues)[number];
+export type EnglishPhase = (typeof englishPhaseEnum.enumValues)[number];

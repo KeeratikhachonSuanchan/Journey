@@ -19,6 +19,7 @@ export function Nav() {
     { href: "/today", label: t.nav.today },
     { href: "/goals", label: t.nav.goals },
     { href: "/workout", label: t.nav.workout },
+    { href: "/english", label: t.nav.english },
   ];
 
   return (

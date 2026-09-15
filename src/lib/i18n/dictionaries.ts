@@ -5,6 +5,7 @@ export interface Dictionary {
     today: string;
     goals: string;
     workout: string;
+    english: string;
   };
   common: {
     save: string;
@@ -207,6 +208,69 @@ export interface Dictionary {
       external: string;
       other: string;
     };
+    vocabSource: {
+      user: string;
+      common: string;
+    };
+  };
+  english: {
+    title: string;
+    tabOverview: string;
+    tabReview: string;
+    tabVocab: string;
+    tabAdd: string;
+    heroDueSub: string;
+    startReview: string;
+    allCaughtUp: string;
+    allCaughtUpSub: string;
+    progress: string;
+    totalWords: string;
+    mastered: string;
+    learning: string;
+    notStarted: string;
+    streakDays: (n: number) => string;
+    activityLast30: string;
+    reviewsPerDay: string;
+    tapToFlip: string;
+    again: string;
+    hard: string;
+    good: string;
+    easy: string;
+    remaining: (n: number) => string;
+    sessionDone: string;
+    sessionSummary: (reviewed: number) => string;
+    reviewMore: string;
+    backToOverview: string;
+    saveFailed: string;
+    noCardsDue: string;
+    noCardsDueSub: string;
+    search: string;
+    searchPlaceholder: string;
+    allLevels: string;
+    allSources: string;
+    allStates: string;
+    resultCount: (n: number) => string;
+    noResults: string;
+    prev: string;
+    next: string;
+    pageOf: (cur: number, total: number) => string;
+    deleteWord: string;
+    deleteWordConfirm: (word: string) => string;
+    boxLabel: (n: number) => string;
+    notStartedLabel: string;
+    addWord: string;
+    wordLabel: string;
+    meaningLabel: string;
+    exampleLabel: string;
+    levelLabel: string;
+    posLabel: string;
+    wordSaved: string;
+    duplicateWord: (word: string) => string;
+    invalidWord: string;
+    roadmap: string;
+    roadmapSub: string;
+    phaseStreak: (n: number) => string;
+    todayChecklist: string;
   };
 }
 
@@ -217,6 +281,7 @@ export const en: Dictionary = {
     today: "Today",
     goals: "Goals",
     workout: "Workout",
+    english: "English",
   },
   common: {
     save: "Save",
@@ -428,6 +493,69 @@ export const en: Dictionary = {
       external: "External",
       other: "Other",
     },
+    vocabSource: {
+      user: "My words",
+      common: "Common",
+    },
+  },
+  english: {
+    title: "English",
+    tabOverview: "Overview",
+    tabReview: "Review",
+    tabVocab: "Vocabulary",
+    tabAdd: "Add word",
+    heroDueSub: "words due today",
+    startReview: "Start review",
+    allCaughtUp: "All caught up",
+    allCaughtUpSub: "Nothing left to review today",
+    progress: "Progress",
+    totalWords: "Total words",
+    mastered: "Mastered",
+    learning: "Learning",
+    notStarted: "Not started",
+    streakDays: (n: number) => `${n} day streak`,
+    activityLast30: "Last 30 days",
+    reviewsPerDay: "Reviews per day",
+    tapToFlip: "Tap to flip",
+    again: "Again",
+    hard: "Hard",
+    good: "Good",
+    easy: "Easy",
+    remaining: (n: number) => `${n} remaining`,
+    sessionDone: "Session done",
+    sessionSummary: (reviewed: number) => `You reviewed ${reviewed} word${reviewed === 1 ? "" : "s"}`,
+    reviewMore: "Review more",
+    backToOverview: "Back to overview",
+    saveFailed: "Couldn't save that answer, please try again.",
+    noCardsDue: "No cards due",
+    noCardsDueSub: "You're all caught up — come back tomorrow for more.",
+    search: "Search",
+    searchPlaceholder: "Search words...",
+    allLevels: "All levels",
+    allSources: "All sources",
+    allStates: "All states",
+    resultCount: (n: number) => `${n} words`,
+    noResults: "No words match these filters.",
+    prev: "Previous",
+    next: "Next",
+    pageOf: (cur: number, total: number) => `Page ${cur} of ${total}`,
+    deleteWord: "Delete",
+    deleteWordConfirm: (word: string) => `Delete "${word}"? This cannot be undone.`,
+    boxLabel: (n: number) => `Box ${n}`,
+    notStartedLabel: "Not started",
+    addWord: "Add word",
+    wordLabel: "Word",
+    meaningLabel: "Meaning (Thai)",
+    exampleLabel: "Example sentence",
+    levelLabel: "Level",
+    posLabel: "Part of speech (optional)",
+    wordSaved: "Word saved",
+    duplicateWord: (word: string) => `"${word}" is already in your vocabulary.`,
+    invalidWord: "Please fill in the word, meaning, and example.",
+    roadmap: "Learning Roadmap",
+    roadmapSub: "Six phases to build real communication skills",
+    phaseStreak: (n: number) => `${n} day streak`,
+    todayChecklist: "Today's checklist",
   },
 };
 
@@ -438,6 +566,7 @@ export const th: Dictionary = {
     today: "วันนี้",
     goals: "เป้าหมาย",
     workout: "ออกกำลังกาย",
+    english: "ภาษาอังกฤษ",
   },
   common: {
     save: "บันทึก",
@@ -647,5 +776,68 @@ export const th: Dictionary = {
       external: "ปัจจัยภายนอก",
       other: "อื่นๆ",
     },
+    vocabSource: {
+      user: "คำของฉัน",
+      common: "คำทั่วไป",
+    },
+  },
+  english: {
+    title: "ภาษาอังกฤษ",
+    tabOverview: "ภาพรวม",
+    tabReview: "ทบทวน",
+    tabVocab: "คลังคำศัพท์",
+    tabAdd: "เพิ่มคำศัพท์",
+    heroDueSub: "คำรอทบทวนวันนี้",
+    startReview: "เริ่มทบทวน",
+    allCaughtUp: "ทบทวนครบแล้ว",
+    allCaughtUpSub: "วันนี้ไม่มีอะไรต้องทบทวนแล้ว",
+    progress: "ความคืบหน้า",
+    totalWords: "คำศัพท์ทั้งหมด",
+    mastered: "จำได้แล้ว",
+    learning: "กำลังเรียนรู้",
+    notStarted: "ยังไม่เริ่ม",
+    streakDays: (n: number) => `ทำต่อเนื่อง ${n} วัน`,
+    activityLast30: "30 วันที่ผ่านมา",
+    reviewsPerDay: "จำนวนที่ทบทวนต่อวัน",
+    tapToFlip: "แตะเพื่อพลิกการ์ด",
+    again: "จำไม่ได้",
+    hard: "ยาก",
+    good: "ทำได้",
+    easy: "ง่าย",
+    remaining: (n: number) => `เหลืออีก ${n} คำ`,
+    sessionDone: "ทบทวนเสร็จแล้ว",
+    sessionSummary: (reviewed: number) => `คุณทบทวนไป ${reviewed} คำ`,
+    reviewMore: "ทบทวนต่อ",
+    backToOverview: "กลับไปหน้าภาพรวม",
+    saveFailed: "บันทึกคำตอบไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
+    noCardsDue: "ไม่มีคำที่ต้องทบทวน",
+    noCardsDueSub: "วันนี้ทบทวนครบแล้ว พรุ่งนี้ค่อยกลับมาใหม่นะ",
+    search: "ค้นหา",
+    searchPlaceholder: "ค้นหาคำศัพท์...",
+    allLevels: "ทุกระดับ",
+    allSources: "ทุกแหล่งที่มา",
+    allStates: "ทุกสถานะ",
+    resultCount: (n: number) => `${n} คำ`,
+    noResults: "ไม่พบคำศัพท์ที่ตรงกับตัวกรองนี้",
+    prev: "ก่อนหน้า",
+    next: "ถัดไป",
+    pageOf: (cur: number, total: number) => `หน้า ${cur} จาก ${total}`,
+    deleteWord: "ลบ",
+    deleteWordConfirm: (word: string) => `ลบคำว่า "${word}" ใช่ไหม? ไม่สามารถกู้คืนได้`,
+    boxLabel: (n: number) => `กล่อง ${n}`,
+    notStartedLabel: "ยังไม่เริ่ม",
+    addWord: "เพิ่มคำศัพท์",
+    wordLabel: "คำศัพท์",
+    meaningLabel: "ความหมาย (ภาษาไทย)",
+    exampleLabel: "ตัวอย่างประโยค",
+    levelLabel: "ระดับ",
+    posLabel: "ชนิดของคำ (ไม่บังคับ)",
+    wordSaved: "บันทึกคำศัพท์แล้ว",
+    duplicateWord: (word: string) => `"${word}" มีอยู่ในคลังคำศัพท์ของคุณแล้ว`,
+    invalidWord: "กรุณากรอกคำศัพท์ ความหมาย และตัวอย่างประโยคให้ครบ",
+    roadmap: "แผนการฝึกภาษาอังกฤษ",
+    roadmapSub: "6 เฟส เพื่อสร้างทักษะการสื่อสารที่ใช้ได้จริง",
+    phaseStreak: (n: number) => `ทำต่อเนื่อง ${n} วัน`,
+    todayChecklist: "เช็คลิสต์วันนี้",
   },
 };
