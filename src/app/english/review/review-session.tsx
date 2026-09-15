@@ -18,9 +18,22 @@ const RESULTS: { key: ReviewResult; shortcut: string }[] = [
   { key: "easy", shortcut: "4" },
 ];
 
-export function ReviewSession({ cards, dueTotal }: { cards: QueueCard[]; dueTotal: number }) {
+export function ReviewSession({
+  cards: initialCards,
+  dueTotal,
+}: {
+  cards: QueueCard[];
+  dueTotal: number;
+}) {
   const t = useT().english;
   const router = useRouter();
+  // Snapshot the queue at mount and never let it change again. submitReview
+  // revalidates /english and /english/vocab (so the dashboard and browse
+  // page pick up the new box), but Next.js can refresh a *shared ancestor*
+  // of the current route as a side effect of that — which would otherwise
+  // silently swap this prop for a freshly-fetched `cards` array mid-session,
+  // making cards[index] resolve to a different word right after answering.
+  const [cards] = useState(initialCards);
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [results, setResults] = useState<ReviewResult[]>([]);
@@ -41,8 +54,8 @@ export function ReviewSession({ cards, dueTotal }: { cards: QueueCard[]; dueTota
     answeredIndexRef.current = index;
     const cardId = current.cardId;
     // Advance immediately — the write happens in the background, so there's
-    // no per-card network wait. submitReview does not revalidate this route,
-    // so the queue array here stays stable for the rest of the session.
+    // no per-card network wait (the `cards` snapshot above is what keeps
+    // this safe even if the route refreshes in the background).
     startTransition(async () => {
       try {
         await submitReview(cardId, result);
