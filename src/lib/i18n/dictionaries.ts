@@ -154,6 +154,10 @@ export interface Dictionary {
     tag: string;
     toDoTab: (count: number) => string;
     completedTab: (count: number) => string;
+    prevDay: string;
+    nextDay: string;
+    backToToday: string;
+    pastBanner: (date: string) => string;
     noPendingItems: string;
     noCompletedItems: string;
     testReminderButton: string;
@@ -439,6 +443,10 @@ export const en: Dictionary = {
     tag: "Tag",
     toDoTab: (count: number) => `To Do (${count})`,
     completedTab: (count: number) => `Completed (${count})`,
+    prevDay: "Previous day",
+    nextDay: "Next day",
+    backToToday: "Back to today",
+    pastBanner: (date: string) => `Logging for a past date: ${date}`,
     noPendingItems: "Nothing left to review — nice work!",
     noCompletedItems: "Nothing completed yet today.",
     testReminderButton: "Send test LINE reminder",
@@ -722,6 +730,10 @@ export const th: Dictionary = {
     tag: "แท็ก",
     toDoTab: (count: number) => `ต้องทำ (${count})`,
     completedTab: (count: number) => `ทำแล้ว (${count})`,
+    prevDay: "วันก่อนหน้า",
+    nextDay: "วันถัดไป",
+    backToToday: "กลับมาวันนี้",
+    pastBanner: (date: string) => `กำลังบันทึกย้อนหลังของวันที่ ${date}`,
     noPendingItems: "ไม่มีอะไรต้องรีวิวแล้ว เก่งมาก!",
     noCompletedItems: "วันนี้ยังไม่มีรายการที่ทำสำเร็จ",
     testReminderButton: "ทดสอบส่งแจ้งเตือน LINE",

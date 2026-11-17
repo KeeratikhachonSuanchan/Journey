@@ -165,9 +165,18 @@ export async function getLinkableGoals(excludeGoalId?: string) {
     : allGoals;
 }
 
-export async function getTodayData() {
+// `dateStr` (yyyy-MM-dd) lets the Today page show a past day for backdated
+// logging. Missing, malformed or future values fall back to today (Bangkok).
+export async function getTodayData(dateStr?: string) {
   const userId = getCurrentUserId();
-  const todayDate = todayFn();
+  const realToday = todayFn();
+  const realTodayStr = formatDate(realToday);
+  let todayDate = realToday;
+  if (dateStr && /^\d{4}-\d{2}-\d{2}$/.test(dateStr) && dateStr < realTodayStr) {
+    const [y, m, d] = dateStr.split("-").map(Number);
+    const parsed = new Date(y, m - 1, d);
+    if (formatDate(parsed) === dateStr) todayDate = parsed;
+  }
   const todayStr = formatDate(todayDate);
 
   // "Today's goals" are those whose period range covers today (an open
